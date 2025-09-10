@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My New Tab</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app">
+        <header>
+            <h1>Dashboard</h1>
+            <div id="clock"></div>
+            
+            
+        </header>
+        <main>
+            <div id="grid" class="grid">
+                <div class="tile" data-id="google">Google</div>
+                <div class="tile" data-id="youtube">YouTube</div>
+                <div class="tile" data-id="reddit">Reddit</div>
+            </div>
+
+            
+
+            <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+            <script>
+                new Sortable(document.getElementById("grid"), {
+                    animation: 150,   // smooth motion
+                    ghostClass: "dragging" // CSS class while dragging
+                });
+            </script>
+
+
+    </div>
+
+    <footer>
+        <img id="padlock"></img>
+    </footer>
+    </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
+
+
+<!-- 
+ Reddit
+googlemail
+google docs
+artstation
+Fab
+co-op
+smile
+Natwest
+Chatgtp
+gemenii
+co-pilot
+claude 
+-->

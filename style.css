@@ -1,0 +1,52 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+  /* background: #111; */
+  background-image: url("img/mountains.jpg");
+  color: white;
+ 
+}
+
+header {
+  text-align: center;
+  padding: 1rem;
+}
+
+.tile:hover {
+  background: #444;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 120px);
+  gap: 20px;
+  justify-content: center;
+}
+
+.tile {
+  background: #222;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  cursor: grab;
+  transition: background 0.2s;
+}
+
+.dragging {
+  opacity: 0.5;
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center; /* horizontal center */
+  align-items: center;     /* vertical center */
+  padding: 1rem;
+}
+
+#padlock {
+  height: 3vh;
+}
