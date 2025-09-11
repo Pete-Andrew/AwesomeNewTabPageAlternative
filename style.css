@@ -3,6 +3,10 @@ body {
   font-family: sans-serif;
   /* background: #111; */
   background-image: url("img/mountains.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;       /* scale to fill screen */
+  background-position: center;  /* center the image */
+  min-height: 100vh;            /* ensure body is full screen height */
   color: white;
  
 }
