@@ -1,14 +1,38 @@
+.import-area.hidden,
+#importBtn.hidden,
+#backgroundBtn.hidden {
+  display: none;
+}
+
+#backgroundBtn {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.modal-content select {
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+}
+
 body {
   margin: 0;
   font-family: sans-serif;
-  /* background: #111; */
   background-image: url("img/mountains.jpg");
   background-repeat: no-repeat;
-  background-size: cover;       /* scale to fill screen */
-  background-position: center;  /* center the image */
-  min-height: 100vh;            /* ensure body is full screen height */
+  background-size: cover;
+  background-position: center;
+  background-color: #111;
+  min-height: 100vh;
   color: white;
- 
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 header {
@@ -16,8 +40,38 @@ header {
   padding: 1rem;
 }
 
-.tile:hover {
-  background: #444;
+main {
+  flex: 1;
+  padding: 1rem;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.toolbar button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.import-area {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+#importInput {
+  width: 500px;
+  max-width: 90%;
+  min-height: 100px;
+  border-radius: 8px;
+  padding: 10px;
+  resize: vertical;
 }
 
 .grid {
@@ -25,32 +79,111 @@ header {
   grid-template-columns: repeat(auto-fill, 120px);
   gap: 20px;
   justify-content: center;
+  padding: 20px;
+}
+
+.grid.unlocked {
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 140px 140px;
+  border-radius: 12px;
 }
 
 .tile {
+  position: relative;
   background: #222;
   border-radius: 12px;
   padding: 20px;
   text-align: center;
   cursor: grab;
   transition: background 0.2s;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  word-break: break-word;
+}
+
+.tile:hover {
+  background: #444;
+}
+
+.tile-title {
+  pointer-events: none;
 }
 
 .dragging {
   opacity: 0.5;
 }
 
-footer {
+.tile-edit,
+.tile-delete {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
+  top: 6px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: none;
+  font-size: 14px;
+  line-height: 24px;
+  padding: 0;
+}
+
+.tile-edit {
+  right: 6px;
+}
+
+.tile-delete {
+  left: 6px;
+}
+
+footer {
   display: flex;
-  justify-content: center; /* horizontal center */
-  align-items: center;     /* vertical center */
+  justify-content: center;
+  align-items: center;
   padding: 1rem;
 }
 
 #padlock {
-  height: 3vh;
+  height: 32px;
+  cursor: pointer;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.open {
+  display: flex;
+}
+
+.modal-content {
+  background: #1f1f1f;
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-content input {
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
 }

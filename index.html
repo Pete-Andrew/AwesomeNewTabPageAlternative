@@ -1,48 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>My New Tab</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
     <div id="app">
         <header>
             <h1>Dashboard</h1>
             <div id="clock"></div>
-            
-            
         </header>
+
         <main>
-            <div id="grid" class="grid">
-                <div class="tile" data-id="google">Google</div>
-                <div class="tile" data-id="youtube">YouTube</div>
-                <div class="tile" data-id="reddit">Reddit</div>
+<div class="toolbar">
+    <button id="addTileBtn">Add Tile</button>
+    <button id="exportBtn">Export JSON</button>
+    <button id="importBtn">Import JSON</button>
+    <button id="backgroundBtn">Background</button>
+</div>
+
+<div class="import-area" id="importArea">
+    <textarea id="importInput" placeholder="Paste exported JSON here"></textarea>
+</div>
+
+            <div id="grid" class="grid"></div>
+        </main>
+
+        <footer>
+            <img id="padlock" alt="Padlock icon">
+        </footer>
+    </div>
+
+    <!-- Tile editor modal -->
+    <div id="tileEditor" class="modal">
+        <div class="modal-content">
+            <h2>Edit Tile</h2>
+
+            <label for="tileTitle">Title</label>
+            <input id="tileTitle" type="text">
+
+            <label for="tileUrl">Website URL</label>
+            <input id="tileUrl" type="text">
+
+            <label for="tileColor">Tile Colour</label>
+            <input id="tileColor" type="color">
+
+            <div class="modal-actions">
+                <button id="saveTileBtn">Save</button>
+                <button id="closeEditorBtn">Close</button>
             </div>
-
-            
-
-            <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-            <script>
-                new Sortable(document.getElementById("grid"), {
-                    animation: 150,   // smooth motion
-                    ghostClass: "dragging" // CSS class while dragging
-                });
-            </script>
-
-
+        </div>
     </div>
 
-    <footer>
-        <img id="padlock"></img>
-    </footer>
-    </main>
+    <!-- Background editor modal -->
+
+    <div id="backgroundEditor" class="modal">
+    <div class="modal-content">
+        <h2>Background Settings</h2>
+
+        <label for="bgType">Background Type</label>
+        <select id="bgType">
+            <option value="image">Image URL</option>
+            <option value="color">Solid Colour</option>
+        </select>
+
+        <label for="bgImageInput">Image URL</label>
+        <input id="bgImageInput" type="text" placeholder="img/mountains.jpg or https://...">
+
+        <label for="bgColorInput">Background Colour</label>
+        <input id="bgColorInput" type="color" value="#111111">
+
+        <div class="modal-actions">
+            <button id="saveBackgroundBtn">Save</button>
+            <button id="closeBackgroundBtn">Close</button>
+        </div>
     </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="script.js"></script>
 </body>
-
 </html>
 
 
