@@ -1,5 +1,7 @@
 .import-area.hidden,
 #importBtn.hidden,
+#addTileBtn.hidden,
+#exportBtn.hidden,
 #backgroundBtn.hidden {
   display: none;
 }
@@ -201,9 +203,15 @@ main {
 
 footer {
   display: flex;
+   flex-direction: column; 
   justify-content: center;
   align-items: center;
   padding: 1rem;
+}
+
+footer h4,
+footer h5 {
+  margin: 4px 0;
 }
 
 #padlock {

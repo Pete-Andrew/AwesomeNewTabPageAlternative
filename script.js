@@ -259,6 +259,15 @@ function updateLockUI() {
     backgroundBtn.classList.toggle("hidden", padlockLocked);
   }
 
+  if (addTileBtn) {
+    addTileBtn.classList.toggle("hidden", padlockLocked);
+  }
+
+  if (exportBtn) {
+    exportBtn.classList.toggle("hidden", padlockLocked);
+  }
+
+
   padlock.src = padlockLocked
     ? "img/locked_padlock_white.png"
     : "img/unlocked_padlock_white.png";
