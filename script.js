@@ -12,7 +12,7 @@ updateClock();
 // -------------------------
 // CONFIG
 // -------------------------
-const TOTAL_SLOTS = 120;
+const TOTAL_SLOTS = 70;
 
 // -------------------------
 // DEFAULT TILE DATA
