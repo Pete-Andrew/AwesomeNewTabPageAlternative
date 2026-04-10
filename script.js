@@ -12,7 +12,7 @@ updateClock();
 // -------------------------
 // CONFIG
 // -------------------------
-const TOTAL_SLOTS = 80;
+const TOTAL_SLOTS = 120;
 
 // -------------------------
 // DEFAULT TILE DATA
@@ -408,14 +408,11 @@ function applyBackground() {
   const settings = getBackgroundSettings();
 
   if (settings.type === "image") {
-    document.body.style.backgroundImage = `url("${settings.value}")`;
-    document.body.style.backgroundColor = "";
-    document.body.style.backgroundRepeat = "no-repeat";
-    document.body.style.backgroundSize = "cover";
-    document.body.style.backgroundPosition = "center";
+    document.body.style.setProperty("--page-bg-image", `url("${settings.value}")`);
+    document.body.style.setProperty("--page-bg-color", "#111");
   } else if (settings.type === "color") {
-    document.body.style.backgroundImage = "none";
-    document.body.style.backgroundColor = settings.value;
+    document.body.style.setProperty("--page-bg-image", "none");
+    document.body.style.setProperty("--page-bg-color", settings.value);
   }
 }
 
