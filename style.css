@@ -38,11 +38,21 @@ body {
 header {
   text-align: center;
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+#padlock {
+  height: 32px;
+  cursor: pointer;
 }
 
 main {
   flex: 1;
   padding: 1rem;
+  overflow-x: auto;  /* enables horizontal scroll */
 }
 
 .toolbar {
@@ -76,37 +86,55 @@ main {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 120px);
+  grid-template-columns: repeat(12, 120px);
   gap: 20px;
-  justify-content: center;
   padding: 20px;
+
+  justify-content: start; /* KEY FIX */
+  width: max-content;     /* allows grid to grow */
 }
 
-.grid.unlocked {
-  background-image:
-    linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px);
-  background-size: 140px 140px;
+.grid-slot {
+  width: 120px;
+  min-height: 110px;
   border-radius: 12px;
+  box-sizing: border-box;
+  background: transparent;
+  outline: none;
+}
+
+.grid.unlocked .grid-slot {
+  outline: 1px dashed rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .tile {
   position: relative;
   background: #222;
   border-radius: 12px;
-  padding: 20px;
+  padding: 14px 20px 20px;
   text-align: center;
   cursor: grab;
   transition: background 0.2s;
-  min-height: 80px;
+  min-height: 110px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   word-break: break-word;
+  gap: 8px;
+  box-sizing: border-box;
 }
 
 .tile:hover {
   background: #444;
+}
+
+.tile-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex: 0 0 auto;
 }
 
 .tile-title {

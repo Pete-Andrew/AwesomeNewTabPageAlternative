@@ -10,15 +10,69 @@ setInterval(updateClock, 1000);
 updateClock();
 
 // -------------------------
+// CONFIG
+// -------------------------
+const TOTAL_SLOTS = 80;
+
+// -------------------------
 // DEFAULT TILE DATA
 // -------------------------
 const defaultTiles = [
-  { id: "google", title: "Google", url: "https://google.com", color: "#222222" }
+  {
+    id: "google",
+    title: "Google",
+    url: "https://google.com",
+    color: "#222222",
+    icon: "https://google.com/favicon.ico",
+    slot: 0
+  },
+  {
+    id: "youtube",
+    title: "YouTube",
+    url: "https://youtube.com",
+    color: "#222222",
+    icon: "https://youtube.com/favicon.ico",
+    slot: 1
+  }
 ];
+
+// -------------------------
+// HELPERS
+// -------------------------
+function getFaviconFromUrl(url) {
+  try {
+    const parsed = new URL(url);
+    return `${parsed.origin}/favicon.ico`;
+  } catch {
+    return "";
+  }
+}
+
+function findFirstEmptySlot() {
+  const usedSlots = tilesData.map(tile => tile.slot);
+  for (let i = 0; i < TOTAL_SLOTS; i++) {
+    if (!usedSlots.includes(i)) {
+      return i;
+    }
+  }
+  return tilesData.length;
+}
+
+function normaliseTiles(tiles) {
+  return tiles.map((tile, index) => ({
+    id: tile.id || `tile-${Date.now()}-${index}`,
+    title: tile.title || "Untitled",
+    url: tile.url || "",
+    color: tile.color || "#222222",
+    icon: tile.icon ?? getFaviconFromUrl(tile.url || ""),
+    slot: typeof tile.slot === "number" ? tile.slot : index
+  }));
+}
 
 function getTiles() {
   const saved = localStorage.getItem("tilesData");
-  return saved ? JSON.parse(saved) : defaultTiles;
+  const tiles = saved ? JSON.parse(saved) : defaultTiles;
+  return normaliseTiles(tiles);
 }
 
 function saveTiles() {
@@ -28,7 +82,6 @@ function saveTiles() {
 // -------------------------
 // DOM REFERENCES
 // -------------------------
-
 const importArea = document.getElementById("importArea");
 const backgroundBtn = document.getElementById("backgroundBtn");
 
@@ -56,82 +109,132 @@ const closeEditorBtn = document.getElementById("closeEditorBtn");
 let padlockLocked = true;
 let tilesData = getTiles();
 let editingTileId = null;
+let slotSortables = [];
 
 padlock.src = "img/locked_padlock_white.png";
 
 // -------------------------
-// RENDER TILES
+// CREATE TILE ELEMENT
+// -------------------------
+function createTileElement(tileData) {
+  const tile = document.createElement("div");
+  tile.className = "tile";
+  tile.dataset.id = tileData.id;
+  tile.style.backgroundColor = tileData.color;
+
+  const icon = document.createElement("img");
+  icon.className = "tile-icon";
+  icon.src = tileData.icon || getFaviconFromUrl(tileData.url || "");
+  icon.alt = "";
+  icon.onerror = () => {
+    icon.style.display = "none";
+  };
+  tile.appendChild(icon);
+
+  const title = document.createElement("span");
+  title.className = "tile-title";
+  title.textContent = tileData.title;
+  tile.appendChild(title);
+
+  const editBtn = document.createElement("button");
+  editBtn.className = "tile-edit";
+  editBtn.type = "button";
+  editBtn.innerHTML = "✏";
+  editBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openEditor(tileData.id);
+  });
+  tile.appendChild(editBtn);
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "tile-delete";
+  deleteBtn.type = "button";
+  deleteBtn.innerHTML = "✕";
+  deleteBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    deleteTile(tileData.id);
+  });
+  tile.appendChild(deleteBtn);
+
+  tile.addEventListener("click", () => {
+    if (!padlockLocked) return;
+    if (tileData.url) {
+      window.open(tileData.url, "_blank");
+    }
+  });
+
+  return tile;
+}
+
+// -------------------------
+// RENDER TILES INTO FIXED SLOTS
 // -------------------------
 function renderTiles() {
   grid.innerHTML = "";
 
-  tilesData.forEach(tileData => {
-    const tile = document.createElement("div");
-    tile.className = "tile";
-    tile.dataset.id = tileData.id;
-    tile.style.backgroundColor = tileData.color;
+  for (let i = 0; i < TOTAL_SLOTS; i++) {
+    const slot = document.createElement("div");
+    slot.className = "grid-slot";
+    slot.dataset.slot = i;
 
-    const title = document.createElement("span");
-    title.className = "tile-title";
-    title.textContent = tileData.title;
-    tile.appendChild(title);
+    const tileData = tilesData.find(tile => tile.slot === i);
+    if (tileData) {
+      slot.appendChild(createTileElement(tileData));
+    }
 
-    const editBtn = document.createElement("button");
-    editBtn.className = "tile-edit";
-    editBtn.type = "button";
-    editBtn.innerHTML = "✏";
-    editBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      openEditor(tileData.id);
-    });
-    tile.appendChild(editBtn);
+    grid.appendChild(slot);
+  }
 
-    const deleteBtn = document.createElement("button");
-    deleteBtn.className = "tile-delete";
-    deleteBtn.type = "button";
-    deleteBtn.innerHTML = "✕";
-    deleteBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      deleteTile(tileData.id);
-    });
-    tile.appendChild(deleteBtn);
-
-    tile.addEventListener("click", () => {
-      if (!padlockLocked) return;
-      if (tileData.url) {
-        window.open(tileData.url, "_blank");
-      }
-    });
-
-    grid.appendChild(tile);
-  });
-
+  initSlotSortables();
   updateLockUI();
 }
 
-
 // -------------------------
-// SORTABLE
+// SLOT SORTABLES
 // -------------------------
-const sortable = new Sortable(grid, {
-  animation: 150,
-  ghostClass: "dragging",
+function initSlotSortables() {
+  slotSortables.forEach(instance => instance.destroy());
+  slotSortables = [];
 
-  onMove: function () {
-    return !padlockLocked;
-  },
+  document.querySelectorAll(".grid-slot").forEach(slotEl => {
+    const sortable = new Sortable(slotEl, {
+      group: "tiles",
+      animation: 150,
+      ghostClass: "dragging",
+      sort: true,
+      disabled: padlockLocked,
 
-  onEnd: function () {
-    const order = sortable.toArray();
+      onMove: function () {
+        return !padlockLocked;
+      },
 
-    tilesData.sort((a, b) => {
-      return order.indexOf(a.id) - order.indexOf(b.id);
+      onAdd: function (evt) {
+        const tileId = evt.item.dataset.id;
+        const newSlot = Number(evt.to.dataset.slot);
+
+        const movedTile = tilesData.find(tile => tile.id === tileId);
+        if (!movedTile) return;
+
+        // If destination slot already has a tile, move that tile to origin slot
+        const existingTileInDestination = tilesData.find(
+          tile => tile.slot === newSlot && tile.id !== tileId
+        );
+
+        const fromSlot = Number(evt.from.dataset.slot);
+
+        if (existingTileInDestination) {
+          existingTileInDestination.slot = fromSlot;
+        }
+
+        movedTile.slot = newSlot;
+        saveTiles();
+        renderTiles();
+      }
     });
 
-    saveTiles();
-  }
-});
-
+    slotSortables.push(sortable);
+  });
+}
 
 // -------------------------
 // LOCK / UNLOCK
@@ -160,17 +263,18 @@ function updateLockUI() {
     ? "img/locked_padlock_white.png"
     : "img/unlocked_padlock_white.png";
 
-  try {
-    sortable.option("disabled", padlockLocked);
-  } catch (e) {
-    console.log("Sortable disable failed:", e);
-  }
+  slotSortables.forEach(sortable => {
+    try {
+      sortable.option("disabled", padlockLocked);
+    } catch (e) {
+      console.log("Sortable disable failed:", e);
+    }
+  });
 }
 
 padlock.addEventListener("click", function () {
   padlockLocked = !padlockLocked;
   updateLockUI();
-  console.log("Padlock clicked!", padlockLocked ? "locked" : "unlocked");
 });
 
 // -------------------------
@@ -200,6 +304,7 @@ saveTileBtn.addEventListener("click", () => {
   tile.title = tileTitleInput.value.trim() || "Untitled";
   tile.url = tileUrlInput.value.trim();
   tile.color = tileColorInput.value;
+  tile.icon = getFaviconFromUrl(tile.url);
 
   saveTiles();
   renderTiles();
@@ -207,7 +312,6 @@ saveTileBtn.addEventListener("click", () => {
 });
 
 closeEditorBtn.addEventListener("click", closeEditor);
-
 
 // -------------------------
 // DELETE TILE
@@ -218,7 +322,6 @@ function deleteTile(tileId) {
   renderTiles();
 }
 
-
 // -------------------------
 // ADD TILE
 // -------------------------
@@ -227,14 +330,15 @@ addTileBtn.addEventListener("click", () => {
     id: "tile-" + Date.now(),
     title: "New Tile",
     url: "https://",
-    color: "#222222"
+    color: "#222222",
+    icon: "",
+    slot: findFirstEmptySlot()
   };
 
   tilesData.push(newTile);
   saveTiles();
   renderTiles();
 });
-
 
 // -------------------------
 // EXPORT JSON
@@ -246,10 +350,9 @@ exportBtn.addEventListener("click", async () => {
     await navigator.clipboard.writeText(json);
     alert("JSON copied to clipboard");
   } catch (err) {
-    alert("Could not copy to clipboard. You can copy it manually from localStorage or I can help add download export instead.");
+    alert("Could not copy to clipboard.");
   }
 });
-
 
 // -------------------------
 // IMPORT JSON
@@ -275,7 +378,7 @@ importBtn.addEventListener("click", () => {
       return;
     }
 
-    tilesData = parsed;
+    tilesData = normaliseTiles(parsed);
     saveTiles();
     renderTiles();
     alert("Tiles imported successfully");
@@ -287,15 +390,14 @@ importBtn.addEventListener("click", () => {
 // -------------------------
 // BACKGROUND SETTINGS HELPERS
 // -------------------------
-
 function getBackgroundSettings() {
   const saved = localStorage.getItem("backgroundSettings");
   return saved
     ? JSON.parse(saved)
     : {
-      type: "image",
-      value: "img/mountains.jpg"
-    };
+        type: "image",
+        value: "img/mountains.jpg"
+      };
 }
 
 function saveBackgroundSettings(settings) {
@@ -318,9 +420,8 @@ function applyBackground() {
 }
 
 // -------------------------
-// background editor functions
+// BACKGROUND EDITOR FUNCTIONS
 // -------------------------
-
 function openBackgroundEditor() {
   const settings = getBackgroundSettings();
 
@@ -333,7 +434,6 @@ function openBackgroundEditor() {
   }
 
   backgroundEditor.classList.add("open");
-
   updateBackgroundFieldVisibility();
 }
 
@@ -342,9 +442,8 @@ function closeBackgroundEditor() {
 }
 
 // -------------------------
-// Event listeners for background editing
+// BACKGROUND EVENTS
 // -------------------------
-
 backgroundBtn.addEventListener("click", () => {
   openBackgroundEditor();
 });
@@ -371,18 +470,17 @@ saveBackgroundBtn.addEventListener("click", () => {
 
 closeBackgroundBtn.addEventListener("click", closeBackgroundEditor);
 
-
 function updateBackgroundFieldVisibility() {
-    const imageField = document.getElementById("bgImageInput");
-    const colorField = document.getElementById("bgColorInput");
+  const imageField = document.getElementById("bgImageInput");
+  const colorField = document.getElementById("bgColorInput");
 
-    if (bgType.value === "image") {
-        imageField.style.display = "block";
-        colorField.style.display = "none";
-    } else {
-        imageField.style.display = "none";
-        colorField.style.display = "block";
-    }
+  if (bgType.value === "image") {
+    imageField.style.display = "block";
+    colorField.style.display = "none";
+  } else {
+    imageField.style.display = "none";
+    colorField.style.display = "block";
+  }
 }
 
 bgType.addEventListener("change", updateBackgroundFieldVisibility);
@@ -396,15 +494,5 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 // To Do:
-// create an edit and delete icon for each tile, these will only be visible in the unlocked state.
-// When page is in an 'Unlocked state
-// When the edit icon is clicked on, open a pop out window where it is possible to do the following:
-// Make it possible to change the colour of individual tiles with a colour picker and store this info in local storage
-// Make it possible to amend tiles e.g. change their colour, title, and website they are directed too.
-
-
 // Show shadow of the grid when tiles are unlocked to show where tiles can be placed, allow tiles to be placed anywhere on this grid.
-// Store all website links info in local storage?
-// make all the settings of this code be exportable as a JSON, e.g. website name, address, square colour, location on grid
-// ensure this can run locally on a browser so vecrel does not exceed traffic limits? 
 
