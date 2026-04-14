@@ -53,13 +53,17 @@ Click on the padlock icon to edit your links, then shut it again to lock them. T
 
 ## 📦 Installation
 
-### Option 1 — Use via GitHub Pages
+### Option 1 - Copy the link to the new tab page [NewTabPage](https://pete-andrew.github.io/AwesomeNewTabPageAlternative/)
+
+1. Use the free [New Tab Redirect](https://chromewebstore.google.com/detail/new-tab-redirect/icpgjfneehieebagbmdbhnlpiopdcmna) chrome plug in (or alternative) to run the copied link each time a new tab is opened. This is the option I have gone with.
+
+### Option 2 — Use via GitHub Pages
 
 1. Clone or fork this repo
 2. Enable GitHub Pages in repository settings
 3. Open the deployed URL
 
-### Option 2 — Run locally
+### Option 3 — Run locally
 
 ```bash
 git clone https://github.com/Pete-Andrew/AwesomeNewTabPageAlternative.git
