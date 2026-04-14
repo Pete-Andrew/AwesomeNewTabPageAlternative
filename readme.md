@@ -42,6 +42,8 @@ Click on the padlock icon to edit your links, then shut it again to lock them. T
   * Import on another browser/device
   * Easily share layouts
 
+ ![Tab page in locked state](/img/NewTabPageLocked.png "Tab page in locked state")
+
 ---
 
 ## 🚀 Demo
@@ -121,7 +123,9 @@ This includes:
 
 ## 📸 Screenshots
 
-*(Need some!)*
+Tab page in it's unlocked state, here you can add and change tiles as well as reposition them. You can also import/export JSON in this state for a back up or to transfer info between browsers. 
+
+ ![Tab page in unlocked state](/img/NewTabPageUnlocked.png "Tab page in unlocked state")
 
 ---
 
