@@ -59,6 +59,38 @@ header {
   gap: 10px;
 }
 
+#searchForm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+#searchInput {
+  width: 420px;
+  max-width: 80vw;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 999px;
+  font-size: 16px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+#searchInput:focus {
+  outline: none;
+}
+
+#searchForm button {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
 #padlock {
   height: 32px;
   cursor: pointer;

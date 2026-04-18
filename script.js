@@ -497,6 +497,12 @@ bgType.addEventListener("change", updateBackgroundFieldVisibility);
 window.addEventListener("DOMContentLoaded", () => {
   applyBackground();
   renderTiles();
+
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput) {
+    searchInput.focus();
+    searchInput.select();
+  }
 });
 
 // To Do:
